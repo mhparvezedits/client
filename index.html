@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<!--
+Video Client Prospector v2.0
+Copyright © 2026 Dabasmita Karmakar and Mh Parvez. All rights reserved.
+Redesigned and Optimized.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Video Client Prospector v2.0</title>
+  <style>
+    /* --- Modern CSS Design System --- */
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --bg-color: #f1f5f9;
+      --surface: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --success: #10b981;
+      --radius: 12px;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding-bottom: 40px;
+    }
+
+    /* --- Typography & Header --- */
+    header {
+      background: linear-gradient(135deg, #1e1b4b, #4f46e5);
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+      box-shadow: var(--shadow-md);
+    }
+    .header-inner { max-width: 1000px; margin: 0 auto; }
+    header h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 12px; }
+    header p { font-size: 1.1rem; color: #c7d2fe; max-width: 800px; margin: 0 auto; }
+    .version-badge {
+      display: inline-block; background: rgba(255,255,255,0.2); backdrop-filter: blur(4px);
+      padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; margin-bottom: 16px;
+    }
+
+    /* --- Layout & Grid --- */
+    main { max-width: 1200px; margin: 32px auto; padding: 0 20px; }
+    .grid { display: grid; gap: 24px; }
+    .grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+    
+    /* --- Cards --- */
+    .card {
+      background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border);
+      padding: 24px; box-shadow: var(--shadow-sm); transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .card h2 { font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; color: var(--text-main); }
+    .card p.help { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; }
+
+    /* --- Forms & Inputs --- */
+    label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: var(--text-main); }
+    input, select, textarea {
+      width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px;
+      font-size: 0.95rem; font-family: inherit; transition: border-color 0.2s, box-shadow 0.2s;
+      background-color: #f8fafc;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none; border-color: var(--primary); background-color: #fff;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+    textarea { min-height: 100px; resize: vertical; }
+    .input-group { margin-bottom: 16px; }
+
+    /* --- Buttons --- */
+    .btn-group { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+    button {
+      padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600; font-size: 0.95rem;
+      cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+    .btn-secondary { background: #e2e8f0; color: #334155; }
+    .btn-secondary:hover { background: #cbd5e1; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-danger:hover { background: var(--danger-hover); }
+    .btn-small { padding: 6px 12px; font-size: 0.85rem; }
+
+    /* --- Status & Alerts --- */
+    .status-msg { margin-top: 12px; font-size: 0.9rem; font-weight: 600; color: var(--success); }
+    .alert { padding: 12px 16px; border-radius: 8px; font-size: 0.9rem; margin-top: 16px; font-weight: 500; }
+    .alert-info { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+    .alert-warn { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+
+    /* --- Search Results --- */
+    .search-list { max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 8px; }
+    .search-item { padding: 12px; background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; }
+    .search-item strong { display: block; margin-bottom: 4px; font-size: 0.95rem; }
+    .search-item a { color: var(--primary); text-decoration: none; font-weight: 600; font-size: 0.85rem; }
+    .search-item a:hover { text-decoration: underline; }
+
+    /* --- Dashboard Stats --- */
+    .stat-card { background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 16px; text-align: center; }
+    .stat-label { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 700; margin-bottom: 4px; }
+    .stat-val { font-size: 2rem; font-weight: 800; color: var(--text-main); }
+
+    /* --- Data Table --- */
+    .table-container { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); margin-top: 20px; background: white; }
+    table { width: 100%; border-collapse: collapse; min-width: 1400px; text-align: left; }
+    th, td { padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 0.9rem; vertical-align: middle; }
+    th { background: #f8fafc; font-weight: 600; color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; position: sticky; top: 0; z-index: 10; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover { background-color: #f1f5f9; }
+    
+    /* --- Badges --- */
+    .badge { display: inline-flex; align-items: center; justify-content: center; padding: 4px 10px; border-radius: 99px; font-size: 0.75rem; font-weight: 700; }
+    .badge-score { background: #e0e7ff; color: #3730a3; }
+    .badge-hot { background: #fee2e2; color: #991b1b; }
+    .badge-warm { background: #fef3c7; color: #92400e; }
+    .badge-cold { background: #dbeafe; color: #1e40af; }
+
+    /* --- Modals --- */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); display: flex; align-items: center; justify-content: center;
+      padding: 20px; z-index: 1000; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; backdrop-filter: blur(4px);
+    }
+    .modal-overlay.active { opacity: 1; visibility: visible; }
+    .modal {
+      background: var(--surface); width: 100%; max-width: 700px; max-height: 90vh; overflow-y: auto;
+      border-radius: var(--radius); padding: 32px; box-shadow: var(--shadow-lg); transform: translateY(20px);
+      transition: transform 0.3s ease;
+    }
+    .modal-overlay.active .modal { transform: translateY(0); }
+    .modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+    .modal-header h2 { font-size: 1.5rem; margin: 0; }
+    
+    .msg-block { background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+    .msg-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .msg-header strong { font-size: 0.9rem; color: var(--primary); }
+    .msg-text { white-space: pre-wrap; font-size: 0.9rem; color: var(--text-main); background: white; padding: 12px; border: 1px solid var(--border); border-radius: 6px; }
+    .copy-feedback { color: var(--success); font-size: 0.8rem; font-weight: bold; margin-left: 8px; }
+
+    footer { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <div class="version-badge">Version 2.0</div>
+      <h1>Video Client Prospector</h1>
+      <p>A private, in-browser tool to discover, score, and pitch high-value video editing leads. Zero servers, zero scraping, fully local.</p>
+    </div>
+  </header>
+
+  <main>
+    <!-- Section 1: Target Market Setup -->
+    <section class="grid grid-2" style="margin-bottom: 24px;">
+      <div class="card">
+        <h2>1. Choose Your Target Market</h2>
+        <p class="help">Select your target audience to generate accurate research links.</p>
+
+        <div class="input-group">
+          <label>Service Type</label>
+          <select id="serviceType">
+            <option value="Instagram Reels editing">Instagram Reels editing</option>
+            <option value="YouTube video editing">YouTube video editing</option>
+            <option value="YouTube Shorts repurposing">YouTube Shorts repurposing</option>
+            <option value="Real estate video editing">Real estate video editing</option>
+            <option value="Ad creatives">Ad creatives</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label>Client Category</label>
+          <select id="clientCategory">
+            <option value="Real estate agents">Real estate agents</option>
+            <option value="Restaurants">Restaurants</option>
+            <option value="Gyms">Gyms</option>
+            <option value="Dental clinics">Dental clinics</option>
+            <option value="Business coaches">Business coaches</option>
+            <option value="Local ecommerce brands">Local ecommerce brands</option>
+            <option value="Interior Designers">Interior Designers</option>
+            <option value="Wedding & Event Planners">Wedding & Event Planners</option>
+            <option value="Law Firms">Law Firms</option>
+            <option value="Automotive Dealerships">Automotive Dealerships</option>
+            <option value="Med Spas & Aesthetics">Med Spas & Aesthetics</option>
+          </select>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="input-group">
+            <label>Target City</label>
+            <input id="targetCity" type="text" placeholder="e.g., Dallas" />
+          </div>
+          <div class="input-group">
+            <label>Target Country (Optional)</label>
+            <input id="targetCountry" type="text" placeholder="e.g., USA" />
+          </div>
+        </div>
+
+        <div class="btn-group">
+          <button id="saveIcpBtn" class="btn-primary">Save Market Target</button>
+          <button id="clearIcpBtn" class="btn-secondary">Clear</button>
+        </div>
+        <div id="icpStatus" class="status-msg"></div>
+      </div>
+
+      <!-- Section 2: Research Links -->
+      <div class="card">
+        <h2>2. Google Maps Research</h2>
+        <p class="help">Generate hyper-local search queries based on your target market.</p>
+        <button id="generateLinksBtn" class="btn-primary" style="margin-bottom: 16px; width: 100%;">Generate Research Links</button>
+        
+        <div id="searchResults" class="search-list">
+          <div class="search-item" style="text-align: center; color: var(--text-muted);">
+            Save your target market first to generate map links.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Manual Lead Entry -->
+    <section class="card" style="margin-bottom: 24px;">
+      <h2>3. Add New Lead</h2>
+      <p class="help">Found a good fit? Log them here to score and track them.</p>
+
+      <div class="grid grid-3">
+        <div class="input-group"><label>Business Name*</label><input id="leadName" type="text" /></div>
+        <div class="input-group"><label>Niche</label><input id="leadNiche" type="text" /></div>
+        <div class="input-group"><label>City</label><input id="leadCity" type="text" /></div>
+        
+        <div class="input-group"><label>Website</label><input id="leadWebsite" type="text" placeholder="example.com" /></div>
+        <div class="input-group"><label>Google Maps URL</label><input id="leadMapsUrl" type="url" /></div>
+        <div class="input-group"><label>Contact Name</label><input id="leadContact" type="text" /></div>
+        
+        <div class="input-group"><label>Email / Social</label><input id="leadEmail" type="text" /></div>
+        <div class="input-group"><label>Content Quality</label>
+          <select id="contentQuality"><option value="Poor">Poor</option><option value="Average" selected>Average</option><option value="Good">Good</option></select>
+        </div>
+        <div class="input-group"><label>Has Video Content?</label>
+          <select id="hasVideoContent"><option value="No" selected>No</option><option value="Yes">Yes</option></select>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Notes & Strategy</label>
+        <textarea id="leadNotes" placeholder="What are they doing wrong? How can you help?"></textarea>
+      </div>
+
+      <div class="btn-group">
+        <button id="addLeadBtn" class="btn-primary">Calculate Score & Save Lead</button>
+        <button id="clearFormBtn" class="btn-secondary">Clear Form</button>
+      </div>
+      <div id="leadStatusMessage" class="status-msg"></div>
+    </section>
+
+    <!-- Section 4: Dashboard Stats -->
+    <section class="card" style="margin-bottom: 24px;">
+      <h2>4. Pipeline Overview</h2>
+      <div class="grid grid-4" style="margin-top: 16px;">
+        <div class="stat-card"><span class="stat-label">Total Leads</span><span id="statTotal" class="stat-val">0</span></div>
+        <div class="stat-card"><span class="stat-label">Hot Leads</span><span id="statHot" class="stat-val">0</span></div>
+        <div class="stat-card"><span class="stat-label">Avg Score</span><span id="statScore" class="stat-val">0</span></div>
+        <div class="stat-card"><span class="stat-label">Contacted</span><span id="statContacted" class="stat-val">0</span></div>
+      </div>
+    </section>
+
+    <!-- Section 5: Lead Database -->
+    <section class="card" style="margin-bottom: 24px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap;">
+        <div>
+          <h2>5. Saved Prospects Pipeline</h2>
+          <p class="help" style="margin: 0;">Manage, pitch, and export your prospects.</p>
+        </div>
+        <div class="btn-group" style="margin-top: 0;">
+          <button id="exportCsvBtn" class="btn-secondary">Export CSV</button>
+          <button id="deleteAllBtn" class="btn-danger">Clear All Data</button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Business</th>
+              <th>City</th>
+              <th>Score</th>
+              <th>Temp</th>
+              <th>Pitch Generation</th>
+              <th>Status</th>
+              <th>Website</th>
+              <th>Maps</th>
+              <th>Added</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="leadTableBody">
+            <tr><td colspan="10" style="text-align:center; color: var(--text-muted);">No leads saved yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Outreach Modal -->
+  <div id="outreachModal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <h2 id="modalTitle">Outreach Scripts</h2>
+          <p class="help" style="margin:4px 0 0;">Customized for <strong id="modalBizName"></strong></p>
+        </div>
+        <button id="closeModalBtn" class="btn-secondary btn-small">✕ Close</button>
+      </div>
+
+      <div class="msg-block">
+        <div class="msg-header"><strong>Instagram DM</strong><div><button class="btn-secondary btn-small" onclick="copyText('dmText', 'dmCopy')">Copy</button><span id="dmCopy" class="copy-feedback"></span></div></div>
+        <div id="dmText" class="msg-text"></div>
+      </div>
+
+      <div class="msg-block">
+        <div class="msg-header"><strong>Cold Email Subject</strong><div><button class="btn-secondary btn-small" onclick="copyText('subText', 'subCopy')">Copy</button><span id="subCopy" class="copy-feedback"></span></div></div>
+        <div id="subText" class="msg-text"></div>
+      </div>
+
+      <div class="msg-block">
+        <div class="msg-header"><strong>Cold Email Body</strong><div><button class="btn-secondary btn-small" onclick="copyText('bodyText', 'bodyCopy')">Copy</button><span id="bodyCopy" class="copy-feedback"></span></div></div>
+        <div id="bodyText" class="msg-text"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p><strong>Open Source (MIT License)</strong></p>
+<p>You're free to use, modify, and distribute this project under the MIT License. Data is stored locally in your browser cache. Export before clearing browser history.</p>
+  </footer>
+
+  <script>
+    // --- State & Constants ---
+    const STORAGE_KEY_ICP = "vlh_icp_v2";
+    const STORAGE_KEY_LEADS = "vlh_leads_v2";
+    let leads = JSON.parse(localStorage.getItem(STORAGE_KEY_LEADS)) || [];
+
+    // --- DOM Elements ---
+    const DOM = {
+      service: document.getElementById('serviceType'),
+      category: document.getElementById('clientCategory'),
+      city: document.getElementById('targetCity'),
+      country: document.getElementById('targetCountry'),
+      icpMsg: document.getElementById('icpStatus'),
+      searchBox: document.getElementById('searchResults'),
+      
+      form: {
+        name: document.getElementById('leadName'),
+        niche: document.getElementById('leadNiche'),
+        city: document.getElementById('leadCity'),
+        web: document.getElementById('leadWebsite'),
+        map: document.getElementById('leadMapsUrl'),
+        contact: document.getElementById('leadContact'),
+        email: document.getElementById('leadEmail'),
+        quality: document.getElementById('contentQuality'),
+        video: document.getElementById('hasVideoContent'),
+        notes: document.getElementById('leadNotes'),
+        msg: document.getElementById('leadStatusMessage')
+      },
+      
+      stats: {
+        total: document.getElementById('statTotal'),
+        hot: document.getElementById('statHot'),
+        score: document.getElementById('statScore'),
+        contacted: document.getElementById('statContacted')
+      },
+      
+      table: document.getElementById('leadTableBody'),
+      modal: document.getElementById('outreachModal')
+    };
+
+    // --- Utility Functions ---
+    const escapeHtml = (unsafe) => {
+      return String(unsafe || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    };
+
+    const makeLink = (url, label) => {
+      if (!url) return "-";
+      let safeUrl = escapeHtml(url);
+      if (!safeUrl.match(/^https?:\/\//i)) safeUrl = 'https://' + safeUrl;
+      return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${label}</a>`;
+    };
+
+    const generateId = () => Date.now().toString(36) + Math.random().toString(36).substring(2);
+
+    // --- Target Market Logic ---
+    const saveIcp = () => {
+      const icp = {
+        service: DOM.service.value,
+        category: DOM.category.value,
+        city: DOM.city.value.trim(),
+        country: DOM.country.value.trim()
+      };
+      localStorage.setItem(STORAGE_KEY_ICP, JSON.stringify(icp));
+      DOM.form.niche.value = icp.category;
+      DOM.form.city.value = icp.city;
+      DOM.icpMsg.textContent = "Target Market Saved successfully!";
+      setTimeout(() => DOM.icpMsg.textContent = "", 3000);
+    };
+
+    const loadIcp = () => {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY_ICP));
+      if (saved) {
+        DOM.service.value = saved.service;
+        DOM.category.value = saved.category;
+        DOM.city.value = saved.city;
+        DOM.country.value = saved.country;
+        DOM.form.niche.value = saved.category;
+        DOM.form.city.value = saved.city;
+      }
+    };
+
+    // --- Research Link Logic ---
+    const generateLinks = () => {
+      const category = DOM.category.value;
+      const city = DOM.city.value.trim();
+      if (!city) {
+        DOM.searchBox.innerHTML = `<div class="alert alert-warn">Please enter a Target City to generate links.</div>`;
+        return;
+      }
+
+      // Expanded to 15 search queries for broader lead generation
+      const queries = [
+        `${category} in ${city}`,
+        `best ${category} in ${city}`,
+        `top rated ${category} in ${city}`,
+        `premium ${category} in ${city}`,
+        `luxury ${category} in ${city}`,
+        `${category} near ${city}`,
+        `popular ${category} in ${city}`,
+        `local ${category} in ${city}`,
+        `recommended ${category} in ${city}`,
+        `boutique ${category} in ${city}`,
+        `affordable ${category} in ${city}`,
+        `${category} services in ${city}`,
+        `${category} company in ${city}`,
+        `new ${category} in ${city}`,
+        `established ${category} in ${city}`
+      ];
+
+      DOM.searchBox.innerHTML = queries.map(q => {
+        const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+        return `<div class="search-item">
+                  <strong>${escapeHtml(q)}</strong>
+                  <a href="${url}" target="_blank" rel="noopener noreferrer">Open in Google Maps →</a>
+                </div>`;
+      }).join('');
+    };
+
+    // --- Lead Management Logic ---
+    const calcScore = (lead) => {
+      let score = 20; // Base score
+      if (lead.video === 'No') score += 30; // High need
+      if (lead.quality === 'Poor') score += 20;
+      if (lead.quality === 'Average') score += 10;
+      if (lead.web || lead.map) score += 15; // Legitimacy
+      if (lead.contact) score += 15; // Identifiable DM
+      
+      score = Math.min(100, score);
+      const temp = score >= 75 ? 'Hot' : score >= 50 ? 'Warm' : 'Cold';
+      return { score, temp };
+    };
+
+    const addLead = () => {
+      if (!DOM.form.name.value.trim()) {
+        DOM.form.msg.style.color = 'var(--danger)';
+        DOM.form.msg.textContent = "Business Name is required.";
+        return;
+      }
+
+      const rawLead = {
+        name: DOM.form.name.value.trim(),
+        niche: DOM.form.niche.value.trim(),
+        city: DOM.form.city.value.trim(),
+        web: DOM.form.web.value.trim(),
+        map: DOM.form.map.value.trim(),
+        contact: DOM.form.contact.value.trim(),
+        email: DOM.form.email.value.trim(),
+        quality: DOM.form.quality.value,
+        video: DOM.form.video.value,
+        notes: DOM.form.notes.value.trim(),
+        status: 'New',
+        date: new Date().toLocaleDateString()
+      };
+
+      const { score, temp } = calcScore(rawLead);
+      const newLead = { ...rawLead, id: generateId(), score, temp };
+      
+      leads.unshift(newLead);
+      saveLeads();
+      renderUI();
+      
+      DOM.form.name.value = '';
+      DOM.form.web.value = '';
+      DOM.form.map.value = '';
+      DOM.form.contact.value = '';
+      DOM.form.email.value = '';
+      DOM.form.notes.value = '';
+      
+      DOM.form.msg.style.color = 'var(--success)';
+      DOM.form.msg.textContent = `Lead added! Score: ${score}/100`;
+      setTimeout(() => DOM.form.msg.textContent = "", 3000);
+    };
+
+    const saveLeads = () => localStorage.setItem(STORAGE_KEY_LEADS, JSON.stringify(leads));
+
+    const deleteLead = (id) => {
+      if(confirm("Delete this lead?")) {
+        leads = leads.filter(l => l.id !== id);
+        saveLeads();
+        renderUI();
+      }
+    };
+
+    const updateStatus = (id, newStatus) => {
+      const idx = leads.findIndex(l => l.id === id);
+      if (idx > -1) {
+        leads[idx].status = newStatus;
+        saveLeads();
+        renderUI();
+      }
+    };
+
+    // --- UI Rendering ---
+    const renderUI = () => {
+      // 1. Stats (Modern ES6 array methods)
+      const total = leads.length;
+      const hot = leads.filter(l => l.temp === 'Hot').length;
+      const contacted = leads.filter(l => l.status === 'Contacted' || l.status === 'Replied').length;
+      const avgScore = total ? Math.round(leads.reduce((sum, l) => sum + l.score, 0) / total) : 0;
+
+      DOM.stats.total.textContent = total;
+      DOM.stats.hot.textContent = hot;
+      DOM.stats.contacted.textContent = contacted;
+      DOM.stats.score.textContent = total ? `${avgScore}` : '0';
+
+      // 2. Table
+      if (!total) {
+        DOM.table.innerHTML = `<tr><td colspan="10" style="text-align:center; color:var(--text-muted);">No leads saved yet.</td></tr>`;
+        return;
+      }
+
+      DOM.table.innerHTML = leads.map(l => `
+        <tr>
+          <td><strong>${escapeHtml(l.name)}</strong><br><span style="font-size:0.8rem; color:var(--text-muted);">${escapeHtml(l.niche)}</span></td>
+          <td>${escapeHtml(l.city)}</td>
+          <td><span class="badge badge-score">${l.score}/100</span></td>
+          <td><span class="badge badge-${l.temp.toLowerCase()}">${l.temp}</span></td>
+          <td><button class="btn-primary btn-small" onclick="openOutreach('${l.id}')">View Scripts</button></td>
+          <td>
+            <select onchange="updateStatus('${l.id}', this.value)" style="padding:4px; font-size:0.8rem; border-radius:4px;">
+              <option value="New" ${l.status === 'New' ? 'selected' : ''}>New</option>
+              <option value="Contacted" ${l.status === 'Contacted' ? 'selected' : ''}>Contacted</option>
+              <option value="Replied" ${l.status === 'Replied' ? 'selected' : ''}>Replied</option>
+              <option value="Dead" ${l.status === 'Dead' ? 'selected' : ''}>Dead</option>
+            </select>
+          </td>
+          <td>${makeLink(l.web, "Site")}</td>
+          <td>${makeLink(l.map, "Map")}</td>
+          <td style="font-size:0.8rem;">${l.date}</td>
+          <td><button class="btn-danger btn-small" onclick="deleteLead('${l.id}')">Del</button></td>
+        </tr>
+      `).join('');
+    };
+
+    // --- Outreach Modal Logic ---
+    const openOutreach = (id) => {
+      const lead = leads.find(l => l.id === id);
+      if (!lead) return;
+
+      const name = lead.contact || "Team";
+      const biz = lead.name;
+      const angle = lead.video === "No" 
+        ? "start generating high-quality local trust simply by turning photos and phone clips into Reels" 
+        : "upgrade your current content pacing and hooks to capture more local attention";
+
+      document.getElementById('modalBizName').textContent = biz;
+      
+      document.getElementById('dmText').textContent = 
+        `Hey ${name}, came across ${biz} while looking at local businesses in ${lead.city}.\n\n` +
+        `I noticed a massive opportunity for you to ${angle}. I help businesses do this without needing expensive shoots.\n\n` +
+        `Would you be open to me sending over 2 quick content ideas specifically for your page?`;
+
+      document.getElementById('subText').textContent = `Quick content idea for ${biz}`;
+      
+      document.getElementById('bodyText').textContent = 
+        `Hi ${name},\n\n` +
+        `I was researching top businesses in ${lead.city} and ${biz} stood out to me.\n\n` +
+        `I’m a specialized video editor and I noticed an immediate opportunity for you to ${angle}. It doesn't require a big production setup—just better editing strategy on existing assets.\n\n` +
+        `Would you be opposed to seeing a quick example of what this could look like for you?\n\n` +
+        `Best,\n[Your Name]`;
+
+      document.querySelectorAll('.copy-feedback').forEach(el => el.textContent = '');
+      DOM.modal.classList.add('active');
+    };
+
+    const copyText = (elementId, feedbackId) => {
+      const text = document.getElementById(elementId).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const fb = document.getElementById(feedbackId);
+        fb.textContent = "Copied!";
+        setTimeout(() => fb.textContent = "", 2000);
+      });
+    };
+
+    // --- Event Listeners ---
+    document.getElementById('saveIcpBtn').addEventListener('click', saveIcp);
+    document.getElementById('clearIcpBtn').addEventListener('click', () => {
+      localStorage.removeItem(STORAGE_KEY_ICP);
+      DOM.city.value = ''; DOM.country.value = '';
+    });
+    document.getElementById('generateLinksBtn').addEventListener('click', generateLinks);
+    document.getElementById('addLeadBtn').addEventListener('click', addLead);
+    document.getElementById('clearFormBtn').addEventListener('click', () => {
+      DOM.form.name.value = ''; DOM.form.web.value = ''; DOM.form.map.value = ''; DOM.form.contact.value = ''; DOM.form.notes.value = '';
+    });
+    
+    document.getElementById('closeModalBtn').addEventListener('click', () => DOM.modal.classList.remove('active'));
+    DOM.modal.addEventListener('click', (e) => { if(e.target === DOM.modal) DOM.modal.classList.remove('active'); });
+    
+    document.getElementById('deleteAllBtn').addEventListener('click', () => {
+      if(confirm("Warning: Delete ALL leads permanently?")) { leads = []; saveLeads(); renderUI(); }
+    });
+
+    document.getElementById('exportCsvBtn').addEventListener('click', () => {
+      if(!leads.length) return alert("No leads to export.");
+      const headers = ["Business", "Niche", "City", "Score", "Temperature", "Status", "Website", "Contact Name", "Email", "Notes"];
+      const rows = leads.map(l => [
+        `"${escapeHtml(l.name)}"`, `"${escapeHtml(l.niche)}"`, `"${escapeHtml(l.city)}"`, l.score, l.temp, l.status, 
+        `"${escapeHtml(l.web)}"`, `"${escapeHtml(l.contact)}"`, `"${escapeHtml(l.email)}"`, `"${escapeHtml(l.notes).replace(/"/g, '""')}"`
+      ]);
+      const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'Leads_Export_2026.csv';
+      a.click();
+    });
+
+    // --- Init ---
+    loadIcp();
+    renderUI();
+  </script>
+</body>
+</html>
